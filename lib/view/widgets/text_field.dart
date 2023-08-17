@@ -40,6 +40,7 @@ class TextFieldItem extends StatelessWidget {
             keyboardType: keyboardType,
               controller: controller,
               textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w500),
               decoration: const InputDecoration(
                 border: InputBorder.none,
               )),

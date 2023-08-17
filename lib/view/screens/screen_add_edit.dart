@@ -1,28 +1,44 @@
+// ignore_for_file: use_build_context_synchronously
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:student_db/controller/db_functions.dart';
 import 'package:student_db/controller/validator_functions.dart';
 import 'package:student_db/core/constants.dart';
+import 'package:student_db/model/student_model.dart';
 
+import '../widgets/circle_avathar.dart';
 import '../widgets/text_field.dart';
 
 enum ActionType {
   add,
   edit,
 }
+  File? image;
+
 
 class ScreenDetails extends StatelessWidget {
-  ScreenDetails({super.key, required this.action});
+  ScreenDetails({super.key, required this.action, this.model});
 
   final ActionType action;
   final formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final Sql sql = Sql();
+  final Student? model;
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) { setData();});
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(title: action==ActionType.add ? const Text('Add Student') :const Text('Edit Student'),),
+      appBar: AppBar(
+        title: action == ActionType.add
+            ? const Text('Add Student')
+            : const Text('Edit Student'),
+      ),
       body: SingleChildScrollView(
         child: SafeArea(
           minimum: const EdgeInsets.all(30),
@@ -35,28 +51,42 @@ class ScreenDetails extends StatelessWidget {
                 children: [
                   kheight50,
                   InkWell(
-                    onTap: () {},
-                    child: const CircleAvatar(
-                      backgroundColor: kblack,
-                      radius: 100,
-                      child: Icon(
-                        Icons.image,
-                        color: kwhite,
-                      ),
-                    ),
-                  ),
+                      onTap: () async {
+                        await pickImage();
+                      },
+                      child: CircleImage(
+                        radius: 100,
+                        image: image,
+                      )),
                   kheight50,
-                  TextFieldItem(function: isAlphabet,
-                      size: size,controller: nameController,keyboardType: TextInputType.name,header: 'name'),
+                  TextFieldItem(
+                      function: isAlphabet,
+                      size: size,
+                      controller: nameController,
+                      keyboardType: TextInputType.name,
+                      header: 'name'),
                   kheight20,
-                  TextFieldItem(function: isValidAge,
-                      size: size, controller: ageController,keyboardType: TextInputType.number, header: 'age'),
+                  TextFieldItem(
+                      function: isValidAge,
+                      size: size,
+                      controller: ageController,
+                      keyboardType: TextInputType.number,
+                      header: 'age'),
                   kheight20,
-                  TextFieldItem(function: isValidPhoneNumber,
-                      size: size,controller: phoneController,keyboardType: TextInputType.phone,header: 'phone'),
+                  TextFieldItem(
+                      function: isValidPhoneNumber,
+                      size: size,
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      header: 'phone'),
                   kheight20,
                   ElevatedButton.icon(
-                    onPressed: () {if(formKey.currentState!.validate())checkStudent();},
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        await checkStudent();
+                        Navigator.pop(context);
+                      }
+                    },
                     icon: action == ActionType.add
                         ? const Icon(Icons.check)
                         : const Icon(Icons.upload_file),
@@ -76,8 +106,35 @@ class ScreenDetails extends StatelessWidget {
       ),
     );
   }
-checkStudent(){
-  
-}
-}
 
+  Future<void> pickImage() async {
+    XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (img != null) {
+      image = File(img.path);
+    }
+  }
+    setData() {
+    if (action == ActionType.edit) {
+      nameController.text = model!.name;
+      ageController.text = model!.age;
+      phoneController.text = model!.phone;
+      image = model!.image;
+    }
+  }
+
+  Future<void> checkStudent() async {
+    final model = Student(
+      age: ageController.text.trim(),
+      name: nameController.text.trim(),
+      phone: phoneController.text.trim(),
+      image: image,
+    );
+    ActionType.edit == action
+        ? await sql.updateTable(model)
+        : await sql.insertInToDb(model);
+    nameController.text = '';
+    ageController.text = '';
+    phoneController.text = '';
+    image = null;
+  }
+}

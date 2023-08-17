@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:student_db/controller/db_functions.dart';
 import 'package:student_db/core/constants.dart';
 import 'package:student_db/view/screens/screen_home.dart';
 
-void main() {
+Future<void> main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  Sql sql=Sql();
+  await sql.initialiseDatabase();
+
   runApp(const StudentApp());
 }
 
