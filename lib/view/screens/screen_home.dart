@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:student_db/controller/db_functions.dart';
 import 'package:student_db/core/constants.dart';
 import 'package:student_db/view/screens/screen_add_edit.dart';
 
-import '../../model/student_model.dart';
-import '../widgets/list_tile.dart';
+import '../widgets/home/list_view_home.dart';
+import '../widgets/home/search_bar.dart';
 
 ValueNotifier<bool> search = ValueNotifier(false);
-String srarchValue = '';
 
 class ScreenHome extends StatelessWidget {
   ScreenHome({super.key});
@@ -24,7 +22,7 @@ class ScreenHome extends StatelessWidget {
           valueListenable: search,
           builder: (context, value, _) {
             return search.value
-                ? SearchBar(size: size, searchController: searchController)
+                ? SearchBarHome(size: size, searchController: searchController)
                 : const Text('Student List');
           },
         ),
@@ -34,6 +32,7 @@ class ScreenHome extends StatelessWidget {
             builder: (context, value, _) => IconButton(
               onPressed: () {
                 search.value = !search.value;
+                FocusScope.of(context).requestFocus(searchFocus);
               },
               icon: search.value
                   ? const Icon(Icons.arrow_back_ios_new)
@@ -43,42 +42,17 @@ class ScreenHome extends StatelessWidget {
           kwidth20
         ],
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              kheight10,
-              ValueListenableBuilder(
-                valueListenable: studentListNotifier,
-                builder: (context, value, _) {
-                  List<Student> students = value
-                      .where((student) => student.name
-                          .toLowerCase()
-                          .contains(srarchValue.toLowerCase()))
-                      .toList();
-                  return Expanded(
-                    child: ListView.builder(
-                      itemCount: students.length,
-                      itemBuilder: (context, index) {
-                        final Student model = students[index];
-                        return ListStudentTile(
-                          size: size,
-                          model: model,
-                        );
-                      },
-                    ),
-                  );
-                },
-              )
-            ],
-          ),
+          padding: EdgeInsets.all(8.0),
+          child: ListViewHome(),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: kblack,
         foregroundColor: kwhite,
         onPressed: () {
+          clear();
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -86,40 +60,6 @@ class ScreenHome extends StatelessWidget {
               ));
         },
         label: const Text('Add new'),
-      ),
-    );
-  }
-}
-
-class SearchBar extends StatelessWidget {
-  const SearchBar({
-    super.key,
-    required this.size,
-    required this.searchController,
-  });
-
-  final Size size;
-  final TextEditingController searchController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: size.height * 0.05,
-      decoration: const BoxDecoration(
-          boxShadow: [BoxShadow(blurRadius: 1, spreadRadius: 1)],
-          color: kwhite,
-          borderRadius: BorderRadius.all(Radius.circular(50))),
-      child: TextField( onChanged: (value) {
-        srarchValue=value;
-      },
-        cursorColor: kblack,
-        controller: searchController,
-        decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.search_sharp),
-            prefixIconColor: kblack,
-            border: InputBorder.none),
-        style: const TextStyle(
-            color: kblack, fontWeight: FontWeight.w300, fontSize: 18),
       ),
     );
   }

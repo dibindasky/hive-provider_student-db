@@ -7,14 +7,14 @@ import 'circle_avathar.dart';
 class ProfileTile extends StatelessWidget {
   const ProfileTile({
     super.key,
-    required this.size, required this.model,
+    required this.model,
   });
 
-  final Size size;
   final Student model;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return AlertDialog(backgroundColor: kwhite,
           title: CircleImage(radius: 70,image: model.image),
           content: SizedBox(

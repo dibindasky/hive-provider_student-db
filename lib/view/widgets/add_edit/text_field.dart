@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student_db/controller/validator_functions.dart';
 
-import '../../core/constants.dart';
+import '../../../core/constants.dart';
 
 class TextFieldItem extends StatelessWidget {
   const TextFieldItem({

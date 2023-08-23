@@ -1,38 +1,39 @@
-// ignore_for_file: use_build_context_synchronously
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:student_db/controller/db_functions.dart';
 import 'package:student_db/controller/validator_functions.dart';
 import 'package:student_db/core/constants.dart';
 import 'package:student_db/model/student_model.dart';
+import 'package:student_db/provider/studentmodel_provider.dart';
 
 import '../widgets/circle_avathar.dart';
-import '../widgets/text_field.dart';
+import '../widgets/add_edit/text_field.dart';
 
 enum ActionType {
   add,
   edit,
 }
-  File? image;
 
+ValueNotifier<File?> image= ValueNotifier<File?>(null);
+final TextEditingController nameController = TextEditingController();
+final TextEditingController ageController = TextEditingController();
+final TextEditingController phoneController = TextEditingController();
 
 class ScreenDetails extends StatelessWidget {
   ScreenDetails({super.key, required this.action, this.model});
 
+  final Student? model;
   final ActionType action;
   final formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   final Sql sql = Sql();
-  final Student? model;
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) { setData();});
     final size = MediaQuery.of(context).size;
+    final phone=model!=null ? model!.phone : '';
     return Scaffold(
       appBar: AppBar(
         title: action == ActionType.add
@@ -54,9 +55,13 @@ class ScreenDetails extends StatelessWidget {
                       onTap: () async {
                         await pickImage();
                       },
-                      child: CircleImage(
-                        radius: 100,
-                        image: image,
+                      child: ValueListenableBuilder(valueListenable: image,
+                        builder: (context,value,child) {
+                          return CircleImage(
+                            radius: 100,
+                            image: image.value,
+                          );
+                        }
                       )),
                   kheight50,
                   TextFieldItem(
@@ -83,8 +88,18 @@ class ScreenDetails extends StatelessWidget {
                   ElevatedButton.icon(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        await checkStudent();
-                        Navigator.pop(context);
+                        final student = Student(
+                          age: ageController.text.trim(),
+                          name: nameController.text.trim(),
+                          phone: phoneController.text.trim(),
+                          image: image.value,
+                        );
+                       
+                        await context
+                            .read<StudentModelProvider>()
+                            .addOrEdit(student, action == ActionType.edit,phone);
+                             Navigator.pop(context);
+                        clear();
                       }
                     },
                     icon: action == ActionType.add
@@ -110,31 +125,21 @@ class ScreenDetails extends StatelessWidget {
   Future<void> pickImage() async {
     XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (img != null) {
-      image = File(img.path);
+      image.value = File(img.path);
     }
   }
-    setData() {
-    if (action == ActionType.edit) {
-      nameController.text = model!.name;
-      ageController.text = model!.age;
-      phoneController.text = model!.phone;
-      image = model!.image;
-    }
-  }
+}
 
-  Future<void> checkStudent() async {
-    final model = Student(
-      age: ageController.text.trim(),
-      name: nameController.text.trim(),
-      phone: phoneController.text.trim(),
-      image: image,
-    );
-    ActionType.edit == action
-        ? await sql.updateTable(model)
-        : await sql.insertInToDb(model);
-    nameController.text = '';
-    ageController.text = '';
-    phoneController.text = '';
-    image = null;
-  }
+setData(Student model) {
+  nameController.text = model.name;
+  ageController.text = model.age;
+  phoneController.text = model.phone;
+  image.value = model.image;
+}
+
+clear() {
+  nameController.text = '';
+  ageController.text = '';
+  phoneController.text = '';
+  image.value = null;
 }

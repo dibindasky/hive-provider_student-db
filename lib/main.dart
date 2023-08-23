@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:student_db/controller/db_functions.dart';
 import 'package:student_db/core/constants.dart';
+import 'package:student_db/provider/studentmodel_provider.dart';
 import 'package:student_db/view/screens/screen_home.dart';
 
-Future<void> main() async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Sql sql=Sql();
+  Sql sql = Sql();
   await sql.initialiseDatabase();
 
-  runApp(const StudentApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => StudentModelProvider(),
+      child: const StudentApp(),
+    ),
+  );
 }
 
 class StudentApp extends StatelessWidget {
@@ -23,7 +30,8 @@ class StudentApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
               backgroundColor: kblack,
               centerTitle: true,
-              foregroundColor: kwhite,iconTheme: IconThemeData(color: kwhite))),
+              foregroundColor: kwhite,
+              iconTheme: IconThemeData(color: kwhite))),
       home: ScreenHome(),
     );
   }
