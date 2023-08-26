@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_db/controller/db_functions.dart';
+import 'package:student_db/controller/db/db_functions.dart';
 import 'package:student_db/core/constants.dart';
-import 'package:student_db/provider/studentmodel_provider.dart';
+import 'package:student_db/controller/provider/studentmodel_provider.dart';
 import 'package:student_db/view/screens/screen_add_edit.dart';
 import 'package:student_db/view/widgets/circle_avathar.dart';
 

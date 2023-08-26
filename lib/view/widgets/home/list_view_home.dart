@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_db/provider/studentmodel_provider.dart';
+import 'package:student_db/controller/provider/studentmodel_provider.dart';
 import 'package:student_db/view/widgets/home/list_tile.dart';
 
 import '../../../model/student_model.dart';

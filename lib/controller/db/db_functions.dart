@@ -51,8 +51,8 @@ class Sql with ChangeNotifier {
     try {
       String image = model.image == null ? '' : model.image!.path;
       await db.rawUpdate(
-          'UPDATE Student SET name = ?, age = ?, phone =?, image =? WHERE phone = ?',
-          [model.name, model.age, model.phone, image, phone]);
+          'UPDATE Student SET name = ?, age = ?, phone =?, image =? WHERE id = ?',
+          [model.name, model.age, model.phone, image, model.id]);
     } catch (e) {
       return false;
     }

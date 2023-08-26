@@ -1,13 +1,12 @@
 
 import 'package:flutter/material.dart';
-import 'package:student_db/controller/db_functions.dart';
+import 'package:student_db/controller/db/db_functions.dart';
 import 'package:student_db/model/student_model.dart';
 
 class StudentModelProvider with ChangeNotifier {
   Sql sql = Sql();
   List<Student> studentList = [];
 
-  // List<Student> get models => [...studentList];
   Future<void> getStudents(String name) async {
     List<Student> tempList = await sql.getData();
     studentList = tempList

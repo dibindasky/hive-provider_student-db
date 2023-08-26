@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:student_db/controller/db_functions.dart';
-import 'package:student_db/controller/validator_functions.dart';
+import 'package:student_db/controller/db/db_functions.dart';
+import 'package:student_db/controller/functions/validator_functions.dart';
 import 'package:student_db/core/constants.dart';
 import 'package:student_db/model/student_model.dart';
-import 'package:student_db/provider/studentmodel_provider.dart';
+import 'package:student_db/controller/provider/studentmodel_provider.dart';
 
 import '../widgets/circle_avathar.dart';
 import '../widgets/add_edit/text_field.dart';
