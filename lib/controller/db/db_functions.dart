@@ -47,7 +47,7 @@ class Sql with ChangeNotifier {
     return studentList;
   }
 
-  Future<bool> updateTable(Student model,String phone) async {
+  Future<bool> updateTable(Student model) async {
     try {
       String image = model.image == null ? '' : model.image!.path;
       await db.rawUpdate(

@@ -15,8 +15,8 @@ class StudentModelProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addOrEdit(Student model, bool toEdit,[String phone='']) async{
-    toEdit ?await editModel(model,phone) :await addModel(model);
+  Future<void> addOrEdit(Student model, bool toEdit) async{
+    toEdit ?await editModel(model) :await addModel(model);
   }
 
   Future<void> deleteModel(int id) async {
@@ -29,8 +29,8 @@ class StudentModelProvider with ChangeNotifier {
     await getStudents('');
   }
 
-  Future<void> editModel(Student model,String phone) async {
-    await sql.updateTable(model,phone);
+  Future<void> editModel(Student model) async {
+    await sql.updateTable(model);
     await getStudents('');
   }
 }
