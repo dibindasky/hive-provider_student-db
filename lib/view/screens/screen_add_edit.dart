@@ -97,7 +97,7 @@ class ScreenDetails extends StatelessWidget {
                        
                         await context
                             .read<StudentModelProvider>()
-                            .addOrEdit(student, action == ActionType.edit,phone);
+                            .addOrEdit(student, action == ActionType.edit);
                              Navigator.pop(context);
                         clear();
                       }
