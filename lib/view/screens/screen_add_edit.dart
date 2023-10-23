@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:student_db/controller/db/db_functions.dart';
 import 'package:student_db/controller/functions/validator_functions.dart';
 import 'package:student_db/core/constants.dart';
 import 'package:student_db/model/student_model.dart';
@@ -21,19 +20,18 @@ ValueNotifier<File?> image= ValueNotifier<File?>(null);
 final TextEditingController nameController = TextEditingController();
 final TextEditingController ageController = TextEditingController();
 final TextEditingController phoneController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
 class ScreenDetails extends StatelessWidget {
   ScreenDetails({super.key, required this.action, this.model});
 
   final Student? model;
   final ActionType action;
-  final formKey = GlobalKey<FormState>();
-  final Sql sql = Sql();
 
   @override
   Widget build(BuildContext context) {
+    print('build => ()');
     final size = MediaQuery.of(context).size;
-    final phone=model!=null ? model!.phone : '';
     return Scaffold(
       appBar: AppBar(
         title: action == ActionType.add
@@ -43,7 +41,7 @@ class ScreenDetails extends StatelessWidget {
       body: SingleChildScrollView(
         child: SafeArea(
           minimum: const EdgeInsets.all(30),
-          child: Form(
+          child: Form(autovalidateMode: AutovalidateMode.disabled,
             key: formKey,
             child: SizedBox(
               width: size.width,
@@ -59,12 +57,13 @@ class ScreenDetails extends StatelessWidget {
                         builder: (context,value,child) {
                           return CircleImage(
                             radius: 100,
-                            image: image.value,
+                            image: image.value?.path,
                           );
                         }
                       )),
                   kheight50,
                   TextFieldItem(
+                  
                       function: isAlphabet,
                       size: size,
                       controller: nameController,
@@ -92,7 +91,8 @@ class ScreenDetails extends StatelessWidget {
                           age: ageController.text.trim(),
                           name: nameController.text.trim(),
                           phone: phoneController.text.trim(),
-                          image: image.value,
+                          image: image.value?.path,
+                          id: model?.id
                         );
                        
                         await context
@@ -134,7 +134,7 @@ setData(Student model) {
   nameController.text = model.name;
   ageController.text = model.age;
   phoneController.text = model.phone;
-  image.value = model.image;
+  image.value = model.image != null ? File(model.image!): null;
 }
 
 clear() {

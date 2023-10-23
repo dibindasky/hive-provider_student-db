@@ -8,13 +8,13 @@ class CircleImage extends StatelessWidget {
   const CircleImage({super.key, required this.radius, this.image});
 
   final double radius;
-  final File? image;
+  final String? image;
 
   @override
   Widget build(BuildContext context) {
     return image != null
         ? CircleAvatar(
-            backgroundImage: FileImage(image!),
+            backgroundImage: FileImage(File(image!)),
             radius: radius,
           )
         : CircleAvatar(

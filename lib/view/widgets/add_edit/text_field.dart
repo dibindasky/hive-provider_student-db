@@ -31,7 +31,7 @@ class TextFieldItem extends StatelessWidget {
           child: TextFormField(
             validator: (value) {
               if(value!.isEmpty)return 'enter $header';
-              if(functionValidator(function, value)){
+              if(functionValidator(function, value.trim())){
                 return null;
               }else{
                 return 'enter valid $header';

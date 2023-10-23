@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_db/controller/db/db_functions.dart';
 import 'package:student_db/core/constants.dart';
 import 'package:student_db/controller/provider/studentmodel_provider.dart';
 import 'package:student_db/view/screens/screen_add_edit.dart';
@@ -12,10 +11,9 @@ import '../profile_tile.dart';
 ValueNotifier<bool> isDeleting = ValueNotifier<bool>(false);
 
 class ListStudentTile extends StatelessWidget {
-  ListStudentTile({super.key, required this.model});
+  const ListStudentTile({super.key, required this.model});
 
   final Student model;
-  final Sql sql = Sql();
 
   @override
   Widget build(BuildContext context) {

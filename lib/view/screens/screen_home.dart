@@ -17,31 +17,10 @@ class ScreenHome extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: kwhite,
-      appBar: AppBar(
-        title: ValueListenableBuilder(
-          valueListenable: search,
-          builder: (context, value, _) {
-            return search.value
-                ? SearchBarHome(size: size, searchController: searchController)
-                : const Text('Student List');
-          },
-        ),
-        actions: [
-          ValueListenableBuilder(
-            valueListenable: search,
-            builder: (context, value, _) => IconButton(
-              onPressed: () {
-                search.value = !search.value;
-                FocusScope.of(context).requestFocus(searchFocus);
-              },
-              icon: search.value
-                  ? const Icon(Icons.arrow_back_ios_new)
-                  : const Icon(Icons.search_sharp),
-            ),
-          ),
-          kwidth20
-        ],
-      ),
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(120),
+          child:
+              AppbarHomeScreen(size: size, searchController: searchController)),
       body: const SafeArea(
         child: Padding(
           padding: EdgeInsets.all(8.0),
@@ -61,6 +40,59 @@ class ScreenHome extends StatelessWidget {
         },
         label: const Text('Add new'),
       ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class AppbarHomeScreen extends StatelessWidget {
+  const AppbarHomeScreen({
+    super.key,
+    required this.size,
+    required this.searchController,
+  });
+
+  final Size size;
+  final TextEditingController searchController;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: ValueListenableBuilder(
+        valueListenable: search,
+        builder: (context, value, _) {
+          return search.value
+              ? SearchBarHome(size: size, searchController: searchController)
+              : const Text('Student List');
+        },
+      ),
+      actions: [
+        ValueListenableBuilder(
+          valueListenable: search,
+          builder: (context, value, _) => IconButton(
+            onPressed: () {
+              search.value = !search.value;
+              FocusScope.of(context).requestFocus(searchFocus);
+            },
+            icon: search.value
+                ? const Icon(Icons.arrow_back_ios_new)
+                : const Icon(Icons.search_sharp),
+          ),
+        ),
+        kwidth20
+      ],
     );
   }
 }

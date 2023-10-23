@@ -1,34 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:hive/hive.dart';
 import 'package:student_db/model/student_model.dart';
 
-class Sql with ChangeNotifier {
-  //private constructor
-  Sql._();
-
-  // Singleton instance variable
-  static final Sql _instance = Sql._();
-
-  // Factory constructor to return the singleton instance
-  factory Sql() => _instance;
-
-  late Database db;
-
-  Future initialiseDatabase() async {
-    db = await openDatabase(
-      'student.db',
-      version: 1,
-      onCreate: (db, version) async => await db.execute(
-          'CREATE TABLE Student (id INTEGER PRIMARY KEY, name TEXT, age TEXT, phone TEXT, image TEXT)'),
-    );
-  }
+class HiveDb {
+  final String dbName = 'student';
 
   Future<bool> insertInToDb(Student model) async {
     try {
-      String image = model.image == null ? '' : model.image!.path;
-      db.rawInsert(
-          'INSERT INTO Student(name, age, phone, image) VALUES(?, ?, ?, ?)',
-          [model.name, model.age, model.phone, image]);
+      final db = await Hive.openBox<Student>(dbName);
+      model.id = DateTime.now().day +
+          DateTime.now().hour +
+          DateTime.now().minute +
+          DateTime.now().microsecond;
+      await db.put(model.id, model);
     } catch (e) {
       return false;
     }
@@ -36,23 +19,18 @@ class Sql with ChangeNotifier {
   }
 
   Future<List<Student>> getData() async {
-    List<Student> studentList = [];
-    List<Map<String, Object?>> list =
-        await db.rawQuery('SELECT * FROM Student');
-    for (var map in list) {
-      final student = Student.fromMap(map);
-      print(student.name);
-      studentList.add(student);
+    final db = await Hive.openBox<Student>(dbName);
+    final list = <Student>[];
+    for (var i in db.values) {
+      list.add(i);
     }
-    return studentList;
+    return list;
   }
 
   Future<bool> updateTable(Student model) async {
     try {
-      String image = model.image == null ? '' : model.image!.path;
-      await db.rawUpdate(
-          'UPDATE Student SET name = ?, age = ?, phone =?, image =? WHERE id = ?',
-          [model.name, model.age, model.phone, image, model.id]);
+      final db = await Hive.openBox<Student>(dbName);
+      db.put(model.id!, model);
     } catch (e) {
       return false;
     }
@@ -60,10 +38,7 @@ class Sql with ChangeNotifier {
   }
 
   Future<void> deleteData(int id) async {
-    await db.delete(
-      'Student',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final db = await Hive.openBox<Student>(dbName);
+    db.delete(id);
   }
 }

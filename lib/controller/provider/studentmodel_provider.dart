@@ -4,11 +4,11 @@ import 'package:student_db/controller/db/db_functions.dart';
 import 'package:student_db/model/student_model.dart';
 
 class StudentModelProvider with ChangeNotifier {
-  Sql sql = Sql();
+  HiveDb hive = HiveDb();
   List<Student> studentList = [];
 
   Future<void> getStudents(String name) async {
-    List<Student> tempList = await sql.getData();
+    List<Student> tempList = await hive.getData();
     studentList = tempList
         .where((model) => model.name.toLowerCase().contains(name.toLowerCase()))
         .toList();
@@ -20,17 +20,17 @@ class StudentModelProvider with ChangeNotifier {
   }
 
   Future<void> deleteModel(int id) async {
-    await sql.deleteData(id);
+    await hive.deleteData(id);
     await getStudents('');
   }
 
   Future<void> addModel(Student model) async {
-    await sql.insertInToDb(model);
+    await hive.insertInToDb(model);
     await getStudents('');
   }
 
   Future<void> editModel(Student model) async {
-    await sql.updateTable(model);
+    await hive.updateTable(model);
     await getStudents('');
   }
 }
